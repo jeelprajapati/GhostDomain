@@ -16,8 +16,8 @@
   <a href="#installation">Install</a> •
   <a href="#usage">Usage</a> •
   <a href="#demo">Demo</a> •
-  <a href="#structure">Credits</a>
-  <a href="#license">Credits</a>
+  <a href="#structure">Structure</a> •
+  <a href="#license">License</a>
 </p>
 
 ---
