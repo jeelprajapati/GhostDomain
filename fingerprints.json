@@ -1,0 +1,23 @@
+{
+    "github.io": "There isn't a GitHub Pages site here.",
+    "herokuapp.com": "No such app",
+    "amazonaws.com": "NoSuchBucket",
+    "bitbucket.io": "Repository not found",
+    "desk.com": "Please check the URL",
+    "zendesk.com": "Help Center Closed",
+    "fastly.net": "Fastly error: unknown domain",
+    "shopify.com": "Sorry, this shop is currently unavailable",
+    "wordpress.com": "Do you want to register",
+    "elasticbeanstalk.com": "NXDOMAIN",
+    "s3.amazonaws.com": "The specified bucket does not exist",
+    "agilecrm.com": "Sorry, this page is no longer available.",
+    "animaapp.io": "The page you were looking for does not exist.",
+    "ghost.io": "Site unavailable.|Failed to resolve DNS path for this host",
+    "readme.io": "The creators of this project are still working on making everything perfect!",
+    "surge.sh": "project not found",
+    "helpjuice.com": "We could not find what you're looking for.",
+    "helpscoutdocs.com": "No settings were found for this company:",
+    "helprace.com": "HTTP_STATUS=301",
+    "na-west1.surge.sh": "project not found",
+    "smartjobboard.com": "This job board website is either expired or its domain name is invalid."
+}
