@@ -56,11 +56,6 @@ Install dependencies::
 pip install -r requirements.txt
 ```
 
-Run the tool:
-```bash
-python main.py -d example.com
-```
-
 ---
 
 
