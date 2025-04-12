@@ -53,7 +53,7 @@ def load_subdomains(file=None):
         
 def resolve_subdomain(sub, domain):
     full = f"{sub}.{domain}"
-    while true:
+    while True:
         try:
             answers = dns.resolver.resolve(full, "CNAME")
             return str(answers[0].target)
