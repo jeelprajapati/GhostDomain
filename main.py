@@ -9,6 +9,7 @@ import sys
 import subprocess
 import platform
 import time
+import socket
 
 init(autoreset=True)
 
@@ -55,14 +56,40 @@ def resolve_subdomain(sub, domain):
     full = f"{sub}.{domain}"
     while True:
         try:
-            answers = dns.resolver.resolve(full, "CNAME")
-            return str(answers[0].target)
+            dns.resolver.resolve(full, "CNAME")
+            return True
+        
+        except KeyboardInterrupt:
+            raise
+
+        except socket.gaierror:
+            wait_for_network()
+            
         except dns.resolver.NXDOMAIN:
-            return None
-        except dns.exception.DNSException:
+            return False
+
+        except dns.resolver.NoNameservers:
+            return False
+        
+        except dns.resolver.NoAnswer:
+            return False
+        
+        except (
+            dns.resolver.Timeout,
+            dns.resolver.NoMetaqueries,
+            dns.resolver.NotAbsolute,
+            dns.resolver.YXDOMAIN,
+            dns.resolver.NoRootSOA,
+            dns.resolver.NoResolverConfiguration,
+            dns.resolver.NoDefaultResolver,
+            dns.exception.DNSException
+        ):
             wait_for_network()
 
-
+        except Exception as e:
+            print(f"[!] Unexpected error on {full}: {e}")
+            return False
+        
 with open("fingerprints.json", "r") as f:
     fingerprints = json.load(f)
 
@@ -78,6 +105,10 @@ def check_takeover(subdomain, fingerprints):
                 if service in subdomain and signature.lower() in body:
                     return True, status_code, signature
             return False, status_code, ""
+        
+        except KeyboardInterrupt:
+            raise
+
         except requests.exceptions.RequestException:
             wait_for_network()    
 
