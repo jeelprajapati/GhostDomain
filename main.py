@@ -6,6 +6,9 @@ import argparse
 import pyfiglet
 import argparse
 import sys
+import subprocess
+import platform
+import time
 
 init(autoreset=True)
 
@@ -15,7 +18,29 @@ def print_banner():
     print(Fore.YELLOW + "Subdomain Takeover Scanner")
     print(Fore.GREEN + "Version: 1.0.0 by GhostDomain 🔥\n")
     print(Style.RESET_ALL)
-    
+
+def is_connected():
+    try:
+        target = "1.1.1.1"  # Fast, reliable public IP
+        if platform.system().lower() == "windows":
+            result = subprocess.run(["ping", "-n", "1", target], stdout=subprocess.DEVNULL)
+        else:
+            result = subprocess.run(["ping", "-c", "1", target], stdout=subprocess.DEVNULL)
+
+        return result.returncode == 0
+    except Exception:
+        return False
+
+def wait_for_network():
+    print(Fore.YELLOW + "\n⚠️  Network is down. Waiting to reconnect..." + Style.RESET_ALL)
+    while True:
+        if is_connected():
+            print(Fore.GREEN + "✅ Network reconnected. Resuming scan...\n" + Style.RESET_ALL)
+            break
+        else:
+            print(Fore.YELLOW + "🔄 Still offline... retrying in 5 seconds.")
+            time.sleep(5)
+
 
 def load_subdomains(file=None):
     if file:
@@ -28,11 +53,14 @@ def load_subdomains(file=None):
         
 def resolve_subdomain(sub, domain):
     full = f"{sub}.{domain}"
-    try:
-        answers = dns.resolver.resolve(full, "CNAME")
-        return str(answers[0].target)
-    except Exception:
-        return None
+    while true:
+        try:
+            answers = dns.resolver.resolve(full, "CNAME")
+            return str(answers[0].target)
+        except dns.resolver.NXDOMAIN:
+            return None
+        except dns.exception.DNSException:
+            wait_for_network()
 
 
 with open("fingerprints.json", "r") as f:
@@ -40,19 +68,18 @@ with open("fingerprints.json", "r") as f:
 
 def check_takeover(subdomain, fingerprints):
     url = f"http://{subdomain}"
-    try:
-        resp = requests.get(url, timeout=5)
-        status_code = resp.status_code
-        body = resp.text.lower()
+    while True:
+        try:
+            resp = requests.get(url, timeout=5)
+            status_code = resp.status_code
+            body = resp.text.lower()
 
-        for service, signature in fingerprints.items():
-            if service in subdomain and signature.lower() in body:
-                return True, status_code, signature
-        return False, status_code, ""
-    except requests.exceptions.RequestException:
-        return False, "No Response", ""
-    
-    
+            for service, signature in fingerprints.items():
+                if service in subdomain and signature.lower() in body:
+                    return True, status_code, signature
+            return False, status_code, ""
+        except requests.exceptions.RequestException:
+            wait_for_network()    
 
 
 def main(domain, wordlist=None):
